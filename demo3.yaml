@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template Sets up Secret Manager for RDS DB Connection Details for JET"
+Parameters:
+  ApplicationCI:
+    Type: String
+    Default: cbs
+  UpperCaseAppCI:
+    Type: String
+    Default: CBS
+  SLALevel:
+    Type: String
+    Default: Tier 1
+  RiskDataClass:
+    Type: String
+    Default: Moderate:Internal
+  ApplicationContactDL:
+    Type: String
+  MaintenanceWindow:
+    Type: String
+    Default: Sat:05:00-Sat:05:30
+  InternalExternal:
+    Type: String
+    Default: Internal
+  ProjectID:
+    Description: Project identifier for which the bucket is getting created
+    Default: Bin_Fill_Archive
+    Type: String
+  Usecase:
+    Description: Project usecase
+    Default: bin_fill_archive
+    Type: String
+  SystemRole:
+    Description: Description of System/Server Function and Role
+    Default: UDHDatalake
+    Type: String
+  RegulatoryControls:
+    Type: String
+    Default: PII
+  ApplicationEnvironment:
+    Type: String
+    AllowedValues: ['dev','qa','stg', 'prod']
+    Default: stg
+  OwnerEmail:
+    Type: String
+    Default: Sarang.Bapat@united.com
+  RDSUsername:
+    Type: String
+    Default: DE_PRD_RO_segmentation
+  RDSUserPassword:
+    Type: String
+    NoEcho: true
+  RDSHost:
+    Type: String
+    Default: VCLD14GPAMHSI11.global.ual.com
+  RDSPort:
+    Type: String
+    Default: 1130
+  RDSDBName:
+    Type: String
+    Default: SCE_INVENTORY
+  RDSJDBCUrl:
+    Type: String
+    Default: jdbc:sqlserver://VCLD14GPAMHSI11.global.ual.com:1130;databaseName=SCE_INVENTORY
+Resources:
+  RDSSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+        Description: This is used to create Connection details for RDS WDI
+        Name: !Sub ${ApplicationCI}-udh-bin-fill-archive-sql-server-secret-mgr
+        SecretString: !Sub '{"db_username": "${RDSUsername}", "db_password": "${RDSUserPassword}", "db_host": "${RDSHost}", "db_port": "${RDSPort}", "db_name": "${RDSDBName}", "db_jdbc_url": "${RDSJDBCUrl}"}'
+        Tags:
+          - Key : "AppName"
+            Value : !Sub ${ApplicationCI}-udh-bin-fill-archive-sql-server-secret-mgr
+          - Key : ApplicationCI
+            Value : !Ref ApplicationCI
+          - Key : SLALevel
+            Value : !Ref SLALevel
+          - Key : RiskDataClass
+            Value : !Ref RiskDataClass
+          - Key : ApplicationContactDL
+            Value : !Ref ApplicationContactDL
+          - Key : MaintenanceWindow
+            Value : !Ref MaintenanceWindow
+          - Key : InternalExternal
+            Value : !Ref InternalExternal
+          - Key : UpperCaseAppCI
+            Value : !Ref UpperCaseAppCI
+          - Key : Owner
+            Value : !Ref OwnerEmail
+          - Key : ProjectID
+            Value : !Ref ProjectID
+          - Key : SystemRole
+            Value : !Ref SystemRole
+          - Key : Region
+            Value : !Sub ${AWS::Region}
+          - Key : Environment
+            Value : !Ref ApplicationEnvironment
+          - Key : RegulatoryControls
+            Value : !Ref RegulatoryControls
+          - Key : Usecase
+            Value : !Ref Usecase
